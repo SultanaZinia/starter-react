@@ -2,15 +2,19 @@ import * as React from 'react';
 
 import Select, { SelectOption } from './select';
 import MultiselectDropDown from './MultiSelect';
+import Table from './table';
 
 export interface childData{
     [key: string]: string;
 }
 /* tslint:disable */ 
 export interface FormContainerProps {
-    data_dict: any[],
+    data_dict: childData[],
     filter_dict: childData[],
-    select_key : string
+    select_key : string,
+    list_def: childData[]
+    
+
 }
  
 export interface FormContainerState {
@@ -59,18 +63,18 @@ class FormContainer extends React.Component<FormContainerProps,any> {
         return unique;
     }
 
-    private getDataDict(select_key:string){
-        const {data_dict} = this.props;
-        const optionsList: SelectOption[] = [];
-        data_dict.forEach((item:childData, key) => {
-            // multipleList.push(item[select_key]);
-            optionsList.push({"name": item[select_key]});
-            /* tslint:enable */  
-        })
-        let unique = Array.from(new Set(optionsList).values());
-        console.log(unique);
-        return unique;
-    }
+    // private getDataDict(select_key:string){
+    //     const {data_dict} = this.props;
+    //     const optionsList: SelectOption[] = [];
+    //     data_dict.forEach((item:childData, key) => {
+    //         // multipleList.push(item[select_key]);
+    //         optionsList.push({"name": item[select_key]});
+    //         /* tslint:enable */  
+    //     })
+    //     let unique = Array.from(new Set(optionsList).values());
+    //     console.log(unique);
+    //     return unique;
+    // }
 
     private createFilterElement = (element:childData) => {
         
@@ -105,7 +109,7 @@ class FormContainer extends React.Component<FormContainerProps,any> {
 
 
         if (filter_type=="single_select"){
-            let optionsList = this.getDataDict(field_name);
+            let optionsList = this.getDataList(field_name);
              return (<Select title={label_name}
              name={label_name}
              options = {optionsList} 
@@ -125,7 +129,7 @@ class FormContainer extends React.Component<FormContainerProps,any> {
 
     public render() { 
         const {optionsList,multipleList} = this.state;
-        const {filter_dict} = this.props;
+        const {filter_dict,data_dict,list_def} = this.props;
         /* tslint:disable */ 
         console.log(optionsList);
         console.log(multipleList);
@@ -137,6 +141,9 @@ class FormContainer extends React.Component<FormContainerProps,any> {
             <br />
           </div>
         ))}
+        <Table data_dict={data_dict} list_def={list_def}/>
+
+        
 
         </div>);
     }
