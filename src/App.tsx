@@ -33,7 +33,7 @@ class App extends React.Component {
     ],
     filter_dict:[
       {"filter_type":"single_select","label_name":"Submitted By", "field_name":"username", "element_name":"username", "width":"50%" ,"align":"left", "properties":""},
-      {"filter_type":"multi_select","label_name":"Submitted By multi Select", "field_name":"username", "element_name":"username", "width":"50%" ,"align":"left", "properties":""}
+      {"filter_type":"multi_select","label_name":"Submitted By multi Select", "field_name":"username", "element_name":"submitted_by", "width":"50%" ,"align":"left", "properties":""}
       ],
     list_def: [
         { "table_header": "WMG Tracker",
@@ -77,25 +77,25 @@ class App extends React.Component {
     let column_def:childData[] = [];
     // console.loeg(list_def);
     let col_def = list_def[0]['column_definition'];
-    // console.log(col_def);
-    let keys = Object.keys(col_def);
-    for (let key of keys){
+    console.log("First Column Data")
+    console.log(col_def);
+    
+    for (let col of col_def){
         let dict = {};
-        let col = col_def[key];
         let is_sortable,is_hidden,filter = false;
 
         if ('is_hidden' in col)
             is_hidden = col['is_hidden'];
         if (is_hidden)
             continue;
-        if ('filter' in col)
+        if ('filter' in col && col['filter'])
             filter = col['filter'];
         if ('is_sortable' in col)
             is_sortable = col["is_sortable"]
 
         dict['filter'] = filter;
         dict['headerName'] = col["header_name"];
-        dict['field'] = key;
+        dict['field'] = col['field_name'];
         dict['sortable'] = is_sortable;
        
         column_def.push(dict);
@@ -109,8 +109,10 @@ class App extends React.Component {
 
   public render() {
     
-    const {  data_dict,filter_dict } = this.state;
+    const {  data_dict,filter_dict,list_def} = this.state;
     const column_def = this.formatListDef();
+    const table_header = list_def[0]['table_header'];
+
 
     return (
       <div className="App">
@@ -122,7 +124,7 @@ class App extends React.Component {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p> */}
-        <FormContainer list_def={column_def} data_dict={data_dict} filter_dict={filter_dict} select_key="had_horizontal_learning"/>
+        <FormContainer  list_def={column_def} data_dict={data_dict} filter_dict={filter_dict} select_key={table_header}/>
         </div>
       </div>
     );

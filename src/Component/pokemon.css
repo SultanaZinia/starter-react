@@ -1,0 +1,36 @@
+#title {
+    text-align: center;
+    font-family: arial, sans-serif;
+  }
+  
+  #contacts {
+    text-align: center;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    border: 3px solid #ddd;
+    width: 100%;
+  }
+  
+  #contacts td, #contacts th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #contacts tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #contacts tr:hover {background-color: #ddd;}
+  
+  #contacts th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+  }
+  .portlet-title {
+    background-color: #f1f1f1;
+    color: #07293c;
+    margin: 10px 0 10px 0;
+    padding: 5px 5px 5px 15px;
+    font-size: 18px;
+}

@@ -10,7 +10,7 @@ interface SelectProps {
   name: any,
   title: String,
   placeholder: String,
-  options: string[],
+  options: string[]
 
 }
 /* tslint:enable */ 
