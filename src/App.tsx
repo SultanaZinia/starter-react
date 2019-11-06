@@ -33,12 +33,12 @@ class App extends React.Component {
     ],
     filter_dict:[
       {"filter_type":"single_select","label_name":"Submitted By", "field_name":"username", "element_name":"username", "width":"50%" ,"align":"left", "properties":""},
-      {"filter_type":"multi_select","label_name":"Submitted By multi Select", "field_name":"username", "element_name":"submitted_by", "width":"50%" ,"align":"left", "properties":""}
+      {"filter_type":"single_select","label_name":"Submitted By multi Select", "field_name":"username", "element_name":"submitted_by", "width":"50%" ,"align":"left", "properties":""}
       ],
     list_def: [
         { "table_header": "WMG Tracker",
           "list_name": "wmg_tracker",
-          "datasource": "bahis_wmg_tracker_v2_table",
+          "datasource": "bahis_wmg_tracker_v2_table", 
           "column_definition": [
              {"field_name": "username",
               "is_sortable": true,

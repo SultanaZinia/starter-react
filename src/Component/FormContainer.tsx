@@ -19,23 +19,28 @@ export interface FormContainerProps {
  
 export interface FormContainerState {
     optionsList: string[]; 
-    optionLoaded: boolean;
+    data_list: childData[];
     multipleList: string[];
-    [key:string]: any
+    values: childData;
 }
 
 /* tslint:enable */
 class FormContainer extends React.Component<FormContainerProps,FormContainerState> {
     constructor(props){
         super(props);
-        this.state = { optionsList: [], optionLoaded: false,
-            multipleList:[]
+        this.state = { optionsList: [],
+            data_list: [],
+            multipleList:[],
+            values: {}
+            
         }
+        this.handleFormSubmit = this.handleFormSubmit.bind(this);
+        this.handleInput = this.handleInput.bind(this);
     }
     
 
     public componentDidMount() {
-        const {  filter_dict } = this.props;
+        const {  filter_dict,data_dict } = this.props;
 
         for (let filter of filter_dict){
             if ("element_name" in filter){
@@ -44,6 +49,7 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
             }
         }
         
+        this.setState({...this.state, data_list:data_dict})
         /* tslint:disable */
         // console.log(data_dict);
         /* tslint:enable */
@@ -64,7 +70,7 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
 
     private getDataList(select_key:string){
         const {data_dict} = this.props;
-        const multipleList: string[] = [];
+        const multipleList: string[] = ["Select"];
         data_dict.forEach((item:childData, key) => {
             multipleList.push(item[select_key]);
             // multipleList.push({"name": item[select_key]});
@@ -93,7 +99,7 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
     private createFilterElement = (element:childData) => {
         
         // const {optionsList,multipleList} = this.state;
-        let filter_type,label_name,field_name;
+        let filter_type,label_name,field_name, element_id;
         // , properties, align, width
         if ("filter_type" in element){
             filter_type = element["filter_type"]
@@ -109,10 +115,10 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         // if ("align" in element){
         //    align = element["align"]
         // }
-        // if ("element_name" in element){
-        //     const element_id = element["element_name"];
+        if ("element_name" in element){
+             element_id = element["element_name"];
         
-        // }
+        }
 
         // if ("width" in element){
         //    width = element["width"]
@@ -126,11 +132,12 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         if (filter_type=="single_select"){
              let optionsList = this.getDataList(field_name);
             
-             return (<div className="col-md-3"><Select  title={label_name}
-             name={label_name}
+             return (<div className="col-md-3"><Select  id={element_id} title={label_name}
+             name={element_id}
              options = {optionsList} 
-             placeholder = {'--Select--'}/></div>)
-            }
+             placeholder = {'--Select--'}
+             handleChange = {this.handleInput}/></div>)
+        }
         if (filter_type =="multi_select")
         {   
             let optionsList = this.getDataList(field_name);
@@ -143,24 +150,60 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         }
 
 
-    private   handleSubmit(e) {
-            console.log(e);
-            alert('The value is: ' );
-            e.preventDefault();
+    private  handleFormSubmit (e) {
+            const {values,data_list} = this.state;
+            const filtered_data: childData[] = [];
+            console.log(filtered_data);
+
+            for (let data of data_list){
+                let flag=false;
+                console.log(data);
+                let keys = Object(values).keys;
+                for (let key of keys){
+                    if (values[key] === data[key]){
+                        flag=true;
+                    }
+                }
+                if (flag){
+                    filtered_data.push(data);
+                }
+                
+
+            }
+            this.setState({...this.state, data_list:filtered_data})
           }
 
+    
+
+    private handleInput(e) {
+        
+        let value = e.target.value;
+        let name = e.target.name;
+        console.log(value);
+        console.log(name);
+        
+        // console.log(this.state);
+
+        this.setState( prevState => ({ values : 
+            {...prevState.values,  [name]: value
+            }
+          }), () => console.log(this.state.values))
+    }     
+          
 
     public render() { 
         // const {optionsList,multipleList} = this.state;
-        const {filter_dict,data_dict,list_def,select_key} = this.props;
+        const {filter_dict,list_def,select_key} = this.props;
+        const {data_list} = this.state
+        console.log(this.state);
         /* tslint:disable */ 
         /* tslint:enable */ 
         return (<div className="row">
                     <div className="col-md-6">
-                        <Table title={select_key} data_dict={data_dict} list_def={list_def}/>
+                        <Table title={select_key} data_dict={data_list} list_def={list_def}/>
                     </div>
                     <div className="col-md-6"> 
-                        <form onSubmit={this.handleSubmit}>
+                        <form onSubmit={this.handleFormSubmit }>
                         
             
                             
