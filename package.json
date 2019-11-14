@@ -5,7 +5,7 @@
   "dependencies": {
     "ag-grid-community": "^21.2.2",
     "ag-grid-react": "^21.2.2",
-    "bootstrap": "^4.1.1",
+    "bootstrap": "^4.3.1",
     "bootstrap-daterangepicker": "^3.0.5",
     "data-forge": "^1.7.7",
     "jquery": "^3.4.1",
