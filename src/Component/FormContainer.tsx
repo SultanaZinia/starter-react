@@ -4,6 +4,7 @@ const dataForge = require('data-forge');
 // import Select from './select';
 import MultiselectDropDown from './MultiSelect';
 import CheckBox from './CheckBox';
+import Select from './select';
 import {DateRangePicker} from 'react-bootstrap-daterangepicker';
 // you will need the css that comes with bootstrap@3. if you are using
 // a tool like webpack, you can do the following:
@@ -223,7 +224,6 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
             if (type =='date-range'){
                 return(<div><DateRangePicker  /* tslint:disable */
                     onEvent={(e,picker) => this.handleDate(e,picker,field_name,filter_type)}
-                   
                     showDropdowns
                     /* tslint:enable */ >
                        <button>
@@ -248,9 +248,23 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
             }
             
         }
-         return (<p>Nothing</p>)
+        else if (filter_type=="text"){
+            return(<div><Select handleChange={this.handleInput} id = {field_name} name={label_name} title= {label_name} type={"text"} /* tslint:disable */>
+                
+                   </Select>
+                </div>)
+        }
+        
+        return (<p>Nothing</p>)
     }
 
+    private handleInput=(x,condition,field_name)=>{
+        let data = {"condition":condition,"value":x};
+        console.log("handling Filter");
+        console.log(data);
+        this.setState({...this.state,
+          [field_name]:data}); 
+    }
 
     private handleCheck(e,keyname) {
         console.log("here in chekbox");
@@ -260,7 +274,7 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         this.setState({...this.state, [keyname]:e}) 
     } 
 
-    
+
     private handleSelect= (e,keyname,dependency) =>{
 
         if (dependency=='multi_select'){
