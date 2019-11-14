@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './pokemon.css';
+import './table.css';
 import {childData} from './FormContainer';
 // import { Button } from 'reactstrap';
 import { AgGridReact } from 'ag-grid-react';
@@ -101,7 +101,7 @@ class Table extends React.Component<TableProps, TableSearchState> {
 
         return ( <div>   
                         <div className="portlet-title"><p>{title}</p></div>
-                        <div className="ag-theme-balham" style={{ height: '400px'}}>
+                        <div className="ag-theme-balham" style={{ height: '400px',width:"100%"}}>
                             <AgGridReact columnDefs={list_def} rowData={data_dict} pagination={true}/>
         
             
