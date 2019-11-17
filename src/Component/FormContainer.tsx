@@ -39,6 +39,8 @@ export interface FormContainerState {
     data_list: childData[];
     multipleList: string[];
     filterList: string[];
+    textOptions:string[];
+    numberOptions:string[];
   
 }
 
@@ -50,7 +52,9 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         this.state = { optionsList: [],
             data_list: this.props.data_dict,
             multipleList:[],
-            filterList:[]
+            filterList:[],
+            textOptions:['Contains','Not Contains','Equals','Not Equals','Starts'],
+            numberOptions: ['=','!=','>','<','Between','Not Between']
         }
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
 
@@ -249,11 +253,20 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
             
         }
         else if (filter_type=="text"){
-            return(<div><Select handleChange={this.handleInput} id = {field_name} name={label_name} title= {label_name} type={"text"} /* tslint:disable */>
+            const {textOptions} = this.state;
+            return(<div><Select options={textOptions} handleChange={this.handleInput} id = {field_name} name={label_name} title= {label_name} type={"text"} /* tslint:disable */>
                 
                    </Select>
                 </div>)
         }
+        else if (filter_type=="numeric"|| filter_type=="number"){
+            const {numberOptions} = this.state;
+            return(<div><Select options={numberOptions}  handleChange={this.handleInput} id = {field_name} name={label_name} title= {label_name} type={"number"} /* tslint:disable */>
+                
+                   </Select>
+                </div>)
+        }
+        
         
         return (<p>Nothing</p>)
     }
@@ -351,8 +364,111 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
                     
 
                 }
+                else if (filterType=='text'){
+                    console.log("Inside Text");
+                    // console.log(related_field);
+                    // console.log(val);
+                    let condition = val["condition"];
+                    console.log(condition);
+                    // ['Contains','Not Contains','Equals','Not Equals','Starts'],
+                    let value = val["value"][0];
+                    if (value!==''||condition){
+                        switch(condition) {
+                            case "Contains":
+                              if(!row[related_field].includes(value)){
+                                  flag=false;
+                              }
+                              break;
+                            case 'Not Contains':
+                              if(!row[related_field].includes(value)){
+                                    flag=false;
+                              }
+                              break;
+                            case 'Equals':
+                                console.log(typeof(row[related_field]),typeof(value));
+                                if(row[related_field]!==value){
+                                    console.log(typeof(row[related_field]),typeof(value));
+                                    console.log(row[related_field],value);
+                                        flag=false;
+                                    }
+                            break;
+                            case 'Not Equals':
+                                if(!(row[related_field]!==value)){
+                                    flag=false;
+                                }
+                            break;
+                            case 'Starts':
+                                console.log(row[related_field].startsWith(value), row[related_field], value);
+                                if(!(row[related_field].startsWith(value))){
+                                    flag=false;
+                                }
+                            break;
+                            case 'Endswith':
+                                if(!(row[related_field].endsWith(value))){
+                                    flag=false;
+                                }
+                            break;
+                            
+                              // code block
+                          }
+                    }
+                    
+                }
 
-                
+                else if (filterType=='number'){
+                    console.log("Inside Number");
+                    // console.log(related_field);
+                    // console.log(val);
+                    let condition = val["condition"];
+                    console.log(condition);
+                    // ['Contains','Not Contains','Equals','Not Equals','Starts'],
+                    let value1 = Number(val["value"][0]);
+                    let value2 = Number(val["value"][1]);
+                    let columndata = Number(row[related_field]);
+                   
+                    if (condition.toLowerCase()){
+                        switch(condition.toLowerCase()) {
+                            case "=":
+                              if(value1!==columndata){
+                                  flag=false;
+                              }
+                              break;
+                            case '!=':
+                              if(!(value1!==columndata)){
+                                    flag=false;
+                              }
+                              break;
+                            case '>':
+                               
+                                if(columndata<value1){
+                                    console.log(typeof(row[related_field]),typeof(value1));
+                                    console.log(row[related_field],value1);
+                                        flag=false;
+                                    }
+                            break;
+                            case '<':
+                                if(columndata>value1){
+                                    flag=false;
+                                }
+                            break;
+                            case 'between':
+                                    console.log(columndata,value1, value2);
+                                if(value1>columndata || columndata>value2){
+                                    flag=false;
+                                }
+                            break;
+                            case 'not between':
+                                    console.log(condition.toLowerCase(),columndata,value1, value2);
+                                if(!(value1>columndata || columndata>value2)){
+                                    flag=false;
+                                }
+                            break;
+                            
+                              // code block
+                          }
+                    }
+                    
+                }
             } 
         } 
         return flag;

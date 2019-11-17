@@ -13,6 +13,7 @@ interface SelectProps {
   type:string;
   handleChange: any;
   id: string;
+  options: any;
  
  
 
@@ -34,7 +35,7 @@ constructor(props){
   super(props);
   this.state = { 
     condition: null,
-    options:  ['contains','Not Contains','equals','Not Equals','starts'],
+    options:  ['Contains','Not Contains','Equals','Not Equals','Starts'],
     value1:null,
     value2:null,
   }
@@ -64,29 +65,49 @@ public renderField = ({name, displayName})=>{
 
 private makeTextInput = () => {
   const {condition} = this.state;
-
-  switch (condition) {
-    case 'between':
-      return (<div><input                  
-        value={this.state.value1}
+  if (condition){
+    switch (condition.toLowerCase()) {
+      case 'between':
+        return (<div><input                  
+          value={this.state.value1}
+          name={this.props.name}
+          type={this.props.type}
+          onChange={e=>{this.passingProps(e,"value1")}}
+        /><input                  
+        value={this.state.value2}
         name={this.props.name}
         type={this.props.type}
-        onChange={e=>{this.passingProps(e,"value1")}}
-      /><input                  
-      value={this.state.value1}
-      name={this.props.name}
-      type={this.props.type}
-      onChange={e=>{this.passingProps(e,"value2")}}
-    /></div>)
-      break;
-    default:
-      return (<input                  
-        value={this.state.value1}
-        name={this.props.name}
-        type={this.props.type}
-        onChange={e=>{this.passingProps(e,"value1")}}
-      />);
+        onChange={e=>{this.passingProps(e,"value2")}}
+      /></div>)
+        break;
+      case 'not between':
+          return (<div><input                  
+            value={this.state.value1}
+            name={this.props.name}
+            type={this.props.type}
+            onChange={e=>{this.passingProps(e,"value1")}}
+          /><input                  
+          value={this.state.value2}
+          name={this.props.name}
+          type={this.props.type}
+          onChange={e=>{this.passingProps(e,"value2")}}
+        /></div>)
+          break;
+      default:
+        return (<input                  
+          value={this.state.value1}
+          name={this.props.name}
+          type={this.props.type}
+          onChange={e=>{this.passingProps(e,"value1")}}
+        />);
+    }
   }
+  return (<input                  
+    value={this.state.value1}
+    name={this.props.name}
+    type={this.props.type}
+    onChange={e=>{this.passingProps(e,"value1")}}
+  />);
      
 };
 
@@ -120,14 +141,14 @@ passingProps(e,keyName){
   
   this.setState({...this.state,
     [keyName]:e.target.value
-  },()=>this.props.handleChange([this.state[keyName]],this.state.condition,this.props.id) );
+  },()=>this.props.handleChange([this.state.value1,this.state.value2],this.state.condition,this.props.id) );
   
 }
 
 
 render() { 
 
-    const {options} = this.state;
+    const {options} = this.props;
     let sortedList = options.sort()
   .map((location, index) => <option key={index}>{location}</option>);
 
