@@ -6,6 +6,9 @@ import MultiselectDropDown from './MultiSelect';
 import CheckBox from './CheckBox';
 import Select from './select';
 import {DateRangePicker} from 'react-bootstrap-daterangepicker';
+// import {
+//     Button,
+//   } from 'react-bootstrap';
 // you will need the css that comes with bootstrap@3. if you are using
 // a tool like webpack, you can do the following:
 import 'bootstrap/dist/css/bootstrap.css';
@@ -41,7 +44,7 @@ export interface FormContainerState {
     filterList: string[];
     textOptions:string[];
     numberOptions:string[];
-  
+    dateFormat:string;
 }
 
 /* tslint:enable */
@@ -49,12 +52,15 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
 
     constructor(props){
         super(props);
+
+        
         this.state = { optionsList: [],
             data_list: this.props.data_dict,
             multipleList:[],
             filterList:[],
-            textOptions:['Contains','Not Contains','Equals','Not Equals','Starts'],
-            numberOptions: ['=','!=','>','<','Between','Not Between']
+            textOptions:['Select','Contains','Not Contains','Equals','Not Equals','Startswith','Endswith'],
+            numberOptions: ['Select','=','!=','>','<','Between','Not Between'],
+            dateFormat : "YYYY-MM-DD",
         }
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
 
@@ -62,24 +68,34 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
     
 
     public componentDidMount() {
-        const {  filter_dict,data_dict} = this.props;
+        const {  data_dict} = this.props;
+        this.settingFilterState();
+        
+        this.setState({...this.state, data_list:data_dict});
+    }
+    
+    private settingFilterState=()=>{
+        const {  filter_dict} = this.props;
         for (let filter of filter_dict){
             if ("element_name" in filter){
                 let element_id = filter["element_name"];
                 const field_name = filter["field_name"];
                 element_id = element_id+"_list";
                 if (typeof(element_id)==='string' && typeof(field_name)==='string'){
+                    // console.log("Resetting");
+                    // console.log(field_name);
+                    let val = this.state[field_name];
+                    if (val){
+                        
+                    }
                     this.setState({...this.state, [field_name]: null});
-                    let filterList = this.state.filterList;
-                    filterList.push(field_name);
-                    this.setState({...this.state, filterList : filterList});   
+                    // let filterList = this.state.filterList;
+                    // filterList.push(field_name);
+                    // this.setState({...this.state, filterList : filterList});   
             }
             }
         }
-        
-        this.setState({...this.state, data_list:data_dict});
     }
-
 
     // private getDataList(select_key:string){
     //     const {data_dict} = this.props;
@@ -97,7 +113,7 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
     // }
 
     private getDataDict(select_key:string,data_dict){
-        const optionsList: childData[] = [];
+        const optionsList: childData[] = [{id:select_key,value:"", label:"Select"}];
         let unique:string[] = []
 
         data_dict.forEach((item:childData, key) => {
@@ -131,7 +147,8 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         } 
 
         if (appearance && "searchable" in appearance){
-            searchable = appearance["searchable"];
+            if (appearance["searchable"] ==="true")
+                searchable =true;
         }
 
         // let optionsList = this.getdataList(field_name);
@@ -177,7 +194,7 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
             }
             else{
             // let value = this.state[field_name];
-            console.log(typeof(this.state[field_name]));
+            // console.log(typeof(this.state[field_name]));
             // let value_dict = {"label":value,"value":value}
             /* tslint:disable */
             return (<div><MultiselectDropDown value={this.state[field_name]} title={label_name}
@@ -224,21 +241,25 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
             
         }
         else if (filter_type=="date"){
-
+            let formated_date = this.dateInput(field_name);
+            console.log(formated_date);
             if (type =='date-range'){
-                return(<div><DateRangePicker  /* tslint:disable */
+                return(<div><label className="control-label">{label_name}</label><DateRangePicker  /* tslint:disable */
                     onEvent={(e,picker) => this.handleDate(e,picker,field_name,filter_type)}
                     showDropdowns
                     /* tslint:enable */ >
-                       <button>
-                       {label_name}
-                       </button>
+                      <div className="input-group">
+                        
+                            <input type="text" className="form-control" value={formated_date}/>
+                           
+                      </div>
                        
                        </DateRangePicker >
                     </div>)
             }
             else if (type==='date-picker'){
-                return(<div><DateRangePicker singleDatePicker={true} /* tslint:disable */
+                return(<div>
+                    <DateRangePicker singleDatePicker={true} /* tslint:disable */
                     onEvent={(e,picker) => this.handleDate(e,picker,field_name,filter_type)}
                    
                     showDropdowns
@@ -271,10 +292,32 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         return (<p>Nothing</p>)
     }
 
+
+    private dateInput=(field_name)=>{
+
+        
+
+            let date = this.state[field_name];
+            let formated_date = "";
+            if(date){
+                if (date.length===2){
+                    let start = date[0].format('YYYY-MM-DD');
+                    let end = date[1].format('YYYY-MM-DD');
+                    let label = start + ' - ' + end;
+                    formated_date = label;
+                }
+                if (date.length===1){
+                    let start = date[0].format('YYYY-MM-DD');
+                    formated_date = start;
+                }
+            }
+            return formated_date;
+    }
+
     private handleInput=(x,condition,field_name)=>{
         let data = {"condition":condition,"value":x};
-        console.log("handling Filter");
-        console.log(data);
+        // console.log("handling Filter");
+        // console.log(data);
         this.setState({...this.state,
           [field_name]:data}); 
     }
@@ -287,18 +330,26 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         this.setState({...this.state, [keyname]:e}) 
     } 
 
-
     private handleSelect= (e,keyname,dependency) =>{
+        console.log("In handle Select");
 
         if (dependency=='multi_select'){
             let value_list:string[] = [];
-            for (let val of e){
-                if (val && "value" in val){
-                    value_list.push(val["value"]);
+            if (e){
+                for (let val of e){
+                    if (val && "value" in val){
+                        value_list.push(val["value"]);
+                    }
                 }
+               
             }
+            
             if (value_list.length>0)
-            this.setState({...this.state, [keyname]:value_list}) 
+                this.setState({...this.state, [keyname]:value_list})
+            else
+                this.setState({...this.state, [keyname]:null})
+
+             
         }
         else{
             this.setState({...this.state, [keyname]:e["value"]}) ; 
@@ -308,13 +359,14 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
 
 
     private handleDate= (e,picker,field_name,filter_type)=>{
-        console.log("Date");
-        console.log(e);
+        // console.log("Date");
+        // console.log(e);
         
-        // let date_range =picker.startDate.format("DD/MM/YYYY")+"-"+picker.endDate.format("DD/MM/YYYY");
+        // let date_range =
+        // console.log(date_range);
         this.setState({...this.state,
             [field_name]: [picker.startDate,picker.endDate]
-          });
+          },()=>console.log(this.state[field_name]));
 
     }
 
@@ -345,12 +397,12 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
                 else if(filterType == 'date'){
 
                     if (type == 'date-range'){
-                        console.log( new Date(row[related_field]));
+                        // console.log( new Date(row[related_field]));
                         let d1 = new Date(val[0].format("YYYY-MM-DD"));
                         let d2 = new Date(val[1].format("YYYY-MM-DD"));
                         let data_date = new Date(row[related_field]);
                         if ( d1>data_date|| data_date>d2||!row[related_field]) {
-                            console.log(d1,d2,data_date);
+                            // console.log(d1,d2,data_date);
                             flag=false;
                             }
                     }
@@ -365,11 +417,11 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
 
                 }
                 else if (filterType=='text'){
-                    console.log("Inside Text");
+                    // console.log("Inside Text");
                     // console.log(related_field);
                     // console.log(val);
                     let condition = val["condition"];
-                    console.log(condition);
+                    // console.log(condition);
                     // ['Contains','Not Contains','Equals','Not Equals','Starts'],
                     let value = val["value"][0];
                     if (value!==''||condition){
@@ -380,15 +432,15 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
                               }
                               break;
                             case 'Not Contains':
-                              if(!row[related_field].includes(value)){
+                              if(row[related_field].includes(value)){
                                     flag=false;
                               }
                               break;
                             case 'Equals':
-                                console.log(typeof(row[related_field]),typeof(value));
+                                // console.log(typeof(row[related_field]),typeof(value));
                                 if(row[related_field]!==value){
-                                    console.log(typeof(row[related_field]),typeof(value));
-                                    console.log(row[related_field],value);
+                                    // console.log(typeof(row[related_field]),typeof(value));
+                                    // console.log(row[related_field],value);
                                         flag=false;
                                     }
                             break;
@@ -397,8 +449,8 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
                                     flag=false;
                                 }
                             break;
-                            case 'Starts':
-                                console.log(row[related_field].startsWith(value), row[related_field], value);
+                            case 'Startswith':
+                                // console.log(row[related_field].startsWith(value), row[related_field], value);
                                 if(!(row[related_field].startsWith(value))){
                                     flag=false;
                                 }
@@ -416,17 +468,17 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
                 }
 
                 else if (filterType=='number'){
-                    console.log("Inside Number");
+                    // console.log("Inside Number");
                     // console.log(related_field);
                     // console.log(val);
                     let condition = val["condition"];
-                    console.log(condition);
+                    // console.log(condition);
                     // ['Contains','Not Contains','Equals','Not Equals','Starts'],
                     let value1 = Number(val["value"][0]);
                     let value2 = Number(val["value"][1]);
                     let columndata = Number(row[related_field]);
                    
-                    if (condition.toLowerCase()){
+                    if (condition.toLowerCase()|| value1){
                         switch(condition.toLowerCase()) {
                             case "=":
                               if(value1!==columndata){
@@ -441,8 +493,8 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
                             case '>':
                                
                                 if(columndata<value1){
-                                    console.log(typeof(row[related_field]),typeof(value1));
-                                    console.log(row[related_field],value1);
+                                    // console.log(typeof(row[related_field]),typeof(value1));
+                                    // console.log(row[related_field],value1);
                                         flag=false;
                                     }
                             break;
@@ -452,13 +504,13 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
                                 }
                             break;
                             case 'between':
-                                    console.log(columndata,value1, value2);
+                                    // console.log(columndata,value1, value2);
                                 if(value1>columndata || columndata>value2){
                                     flag=false;
                                 }
-                            break;
+                                break;
                             case 'not between':
-                                    console.log(condition.toLowerCase(),columndata,value1, value2);
+                                    // console.log(condition.toLowerCase(),columndata,value1, value2);
                                 if(!(value1>columndata || columndata>value2)){
                                     flag=false;
                                 }
@@ -543,6 +595,7 @@ class FormContainer extends React.Component<FormContainerProps,FormContainerStat
         return (<div className="row">
                     <div className="col-md-3"> 
                         <div><h4>Filter</h4></div>
+                        {/* <button onClick={this.settingFilterState}>Reset</button> */}
                         <div>
                                 { filter_dict.map((elm: childData, index) => (
                                 <div key={index}>

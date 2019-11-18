@@ -34,11 +34,9 @@ class App extends React.Component {
     filter_dict:[
       {"filter_type":"text","label_name":"Branch Name", "field_name":"branch_name", "element_name":"branch_name", "width":"50%" ,"align":"left", "properties":"", "dependency":"district_name","appearance":{"type":""}},
       {"filter_type":"number","label_name":"HH SI", "field_name":"HH SI", "element_name":"hh_si", "width":"50%" ,"align":"left", "properties":"", "dependency":"district_name","appearance":{"type":""}},
-
-
-      {"filter_type":"date","label_name":"Last Visit Date", "field_name":"Last Visit Date", "element_name":"submitted_by", "width":"50%" ,"align":"left", "properties":"", "dependency":"district_name","appearance":{"type":"date-picker"}},
-      {"filter_type":"multi_select","label_name":"Enterrpise Name", "field_name":"Enterrpise Name", "element_name":"enterprise_name", "width":"50%" ,"align":"left", "properties":"", "appearance":{"searchable":false,"type":"checkbox"}, "dependency":[] },
-      {"filter_type":"single_select","label_name":"District", "field_name":"district_name", "element_name":"district_name", "width":"50%" ,"align":"left", "properties":"", "appearance":{"searchable":false,"type":""}, "dependency":[] },
+      {"filter_type":"date","label_name":"Last Visit Date", "field_name":"Last Visit Date", "element_name":"submitted_by", "width":"50%" ,"align":"left", "properties":"", "dependency":"district_name","appearance":{"type":"date-range"}},
+      {"filter_type":"multi_select","label_name":"Enterprise Name", "field_name":"Enterrpise Name", "element_name":"enterprise_name", "width":"50%" ,"align":"left", "properties":"", "appearance":{"searchable":false}, "dependency":[] },
+      {"filter_type":"multi_select","label_name":"District", "field_name":"district_name", "element_name":"district_name", "width":"50%" ,"align":"left", "properties":"", "appearance":{"searchable":false,"type":""}, "dependency":[] },
       {"filter_type":"single_select","label_name":"Upazila", "field_name":"upazila_name", "element_name":"upazila_name", "width":"50%" ,"align":"left", "properties":"", "appearance":{"searchable":"true"}, "dependency":["district_name"] },
       {"filter_type":"single_select","label_name":"Union", "field_name":"union_name", "element_name":"union_name", "width":"50%" ,"align":"left", "properties":"", "appearance":{"searchable":"true"}, "dependency":["district_name","upazila_name"] },
       {"filter_type":"single_select","label_name":"Village", "field_name":"village_name", "element_name":"village_name", "width":"50%" ,"align":"left", "properties":"", "appearance":{"searchable":"true"}, "dependency":["district_name","union_name","upazila_name"] },

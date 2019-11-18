@@ -111,12 +111,12 @@ private makeTextInput = () => {
      
 };
 
-private reset = (selected) => {
-  console.log(selected);
-  this.setState({
-   condition:selected.target.value
-  });
-};
+// private reset = (selected) => {
+//   console.log(selected);
+//   this.setState({
+//    condition:selected.target.value
+//   });
+// };
 
 passingProps(e,keyName){
 
@@ -149,15 +149,14 @@ passingProps(e,keyName){
 render() { 
 
     const {options} = this.props;
-    let sortedList = options.sort()
-  .map((location, index) => <option key={index}>{location}</option>);
+    let sortedList = options.map((location, index) => <option key={index}>{location}</option>);
 
     return ( <div>
        <label htmlFor={this.props.name}>{this.props.title} </label>
        
        <select
        /* tslint:disable */
-       onChange={selected => this.reset(selected)}
+       onChange={e=>{this.passingProps(e,"condition")}}
         /* tslint:enable */ > {sortedList}</select>
         {this.makeTextInput()}
    
